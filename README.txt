@@ -1,0 +1,1 @@
+Questa repository contiene il progetto di Informatica.

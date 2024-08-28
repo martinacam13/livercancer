@@ -6,7 +6,7 @@ password = 'Miky2003@';     % La tua password MySQL
 % Crea una connessione al database tramite ODBC
 conn = database(dsn, username, password);
 
-% Verifica se la connessione è riuscita
+% Verifica se la connessione è riuscita ciao
 if isopen(conn)
     disp('Connessione al database riuscita!');
 else
