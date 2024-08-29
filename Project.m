@@ -3,7 +3,7 @@ dsn = 'MySQL_LiverCancer';  % Nome del DSN che hai creato
 username = 'root';          % Il tuo nome utente MySQL
 password = 'Miky2003@';     % La tua password MySQL
 
-% Crea una connessione al database tramite ODBC
+% Crea una connessione al database tramite ODBC gggg
 conn = database(dsn, username, password);
 
 % Verifica se la connessione è riuscita ciao
