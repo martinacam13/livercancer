@@ -6,15 +6,15 @@ password = 'Miky2003@';     % La tua password MySQL
 % Crea una connessione al database tramite ODBC
 conn = database(dsn, username, password);
 
-% Verifica se la connessione è riuscita ciao
+% Verifica se la connessione è riuscita 
 if isopen(conn)
-    disp('Connessione al database riuscita!');
+    disp('Connessione al database riuscita.');
 else
     disp('Connessione al database fallita.');
     disp(conn.Message);  % Mostra il messaggio di errore
 end
 
-insert = false;
+insert = true;
 while insert
     try
         patient_ID = input('Inserire ID: ', 's');
@@ -25,17 +25,43 @@ while insert
         patientFiscalCode = input('Inserire codice fiscale: ', 's');
 
         % Creazione della query SQL
-        sqlquery = sprintf("INSERT INTO Patients (FirstName, LastName, Age, Gender, FiscalCode) VALUES ('%s', '%s', '%s', '%s', '%s')", firstName, lastName, age, gender, fiscalCode);
+        sqlquery = sprintf("INSERT INTO Patients (FirstName, LastName, Age, Gender, FiscalCode) VALUES ('%s', '%s', '%s', '%s', '%s')", patientFirstName, patientLastName, patientAge, patientGender, patientFiscalCode);
+        
+         % Stampa la query generata per il debug
+        disp('Query SQL generata:');
+        disp(sqlquery);
         
         % Esecuzione della query
         try
             exec(conn, sqlquery);
+            commit(conn);  % Applica le modifiche al database
             disp('Dati inseriti con successo!');
-        catch
+        catch ME
             disp("Errore durante l'inserimento dei dati!");
+            disp(ME.message);  % Stampa il messaggio di errore dettagliato
         end
+        
+        % Chiedi all'utente se vuole inserire un altro record
+        another = input('Vuoi inserire un altro record? (s/n): ', 's');
+        if lower(another) ~= 's'
+            insert = false;
+        end
+    catch ME
+        disp("Errore durante l'inserimento. Riprova.");
+        disp(ME.message);  % Stampa il messaggio di errore dettagliato
     end
 end
+
+
+numEntries = 50;  % Numero di record da inserire in ciascuna tabella
+
+fillDiagnoses(conn, numEntries);
+fillTreatments(conn, numEntries);
+fillOutcomes(conn, numEntries);
+
+close(conn);
+disp('Connessione al database chiusa.');
+
 
 % Riempio randomicamente le altre tabelle
 function fillDiagnoses(conn, numEntries)
@@ -58,9 +84,54 @@ function fillDiagnoses(conn, numEntries)
         
         % Inserire i dati
         data = {patientID, diagnosisDate, diagnosisType, tumorStage};
-        sqlquery = ['INSERT INTO Diagnoses (PatientID, DiagnosisDate, DiagnosisType, TumorStage)''VALUES (?, ?, ?, ?)'];
+        sqlquery = sprintf("INSERT INTO Diagnoses (PatientID, DiagnosisDate, DiagnosisType, TumorStage) VALUES (%d, '%s', '%s', '%s')", patientID, diagnosisDate, diagnosisType, tumorStage);  
         exec(conn, sqlquery, data);
     end
+    disp('dati inseriti nella tabella Diagnoses');
 end
 
+function fillTreatments(conn, numEntries)
+    % Dati di esempio
+    treatmentTypes = {'Chemioterapia', 'Radioterapia', 'Chirurgia', 'Immunoterapia'};
+    treatmentOutcomes = {'In corso', 'Completato', 'Fallito', 'Sospeso'};
+    
+    for i = 1:numEntries
+        % Generazione di dati casuali
+        patientID = randi([1 100]);
+        startDate = datestr(datetime('today') - randi([30 180]), 'yyyy-mm-dd');
+        endDate = datestr(datetime('today') - randi([1 29]), 'yyyy-mm-dd');
+        treatmentType = treatmentTypes{randi(length(treatmentTypes))};
+        treatmentOutcome = treatmentOutcomes{randi(length(treatmentOutcomes))};
         
+        % Creazione della query SQL
+        sqlquery = sprintf("INSERT INTO Treatments (PatientID, TreatmentType, StartDate, EndDate, TreatmentOutcome) VALUES (%d, '%s', '%s', '%s', '%s')", ...
+                            patientID, treatmentType, startDate, endDate, treatmentOutcome);
+        
+        % Esecuzione della query
+        exec(conn, sqlquery);
+    end
+    
+    disp('Dati inseriti nella tabella Treatments');
+end
+
+function fillOutcomes(conn, numEntries)
+    % Dati di esempio
+    statusTypes = {'Stable', 'Progressed', 'Remission', 'Deceased'};
+    
+    for i = 1:numEntries
+        % Generazione di dati casuali
+        patientID = randi([1 100]);
+        followUpDate = datestr(datetime('today') - randi([1 180]), 'yyyy-mm-dd');
+        status = statusTypes{randi(length(statusTypes))};
+        notes = 'Follow-up periodico';
+        
+        % Creazione della query SQL
+        sqlquery = sprintf("INSERT INTO Outcomes (PatientID, FollowUpDate, Status, Notes) VALUES (%d, '%s', '%s', '%s')", ...
+                            patientID, followUpDate, status, notes);
+        
+        % Esecuzione della query
+        exec(conn, sqlquery);
+    end
+    
+    disp('Dati inseriti nella tabella Outcomes');
+end
