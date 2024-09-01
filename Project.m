@@ -59,6 +59,10 @@ fillDiagnoses(conn, numEntries);
 fillTreatments(conn, numEntries);
 fillOutcomes(conn, numEntries);
 
+
+
+
+
 close(conn);
 disp('Connessione al database chiusa.');
 
@@ -88,30 +92,34 @@ function fillDiagnoses(conn, numEntries)
         exec(conn, sqlquery, data);
     end
     disp('dati inseriti nella tabella Diagnoses');
+    disp(ME.message);
 end
 
 function fillTreatments(conn, numEntries)
-    % Dati di esempio
     treatmentTypes = {'Chemioterapia', 'Radioterapia', 'Chirurgia', 'Immunoterapia'};
     treatmentOutcomes = {'In corso', 'Completato', 'Fallito', 'Sospeso'};
     
     for i = 1:numEntries
-        % Generazione di dati casuali
         patientID = randi([1 100]);
         startDate = datestr(datetime('today') - randi([30 180]), 'yyyy-mm-dd');
         endDate = datestr(datetime('today') - randi([1 29]), 'yyyy-mm-dd');
-        treatmentType = treatmentTypes{randi(length(treatmentTypes))};
+        
+        % Seleziona Chirurgia per stadi I o II come esempio fittizio
+        if rand > 0.5
+            treatmentType = 'Chirurgia';
+        else
+            treatmentType = treatmentTypes{randi(length(treatmentTypes))};
+        end
+        
         treatmentOutcome = treatmentOutcomes{randi(length(treatmentOutcomes))};
         
-        % Creazione della query SQL
         sqlquery = sprintf("INSERT INTO Treatments (PatientID, TreatmentType, StartDate, EndDate, TreatmentOutcome) VALUES (%d, '%s', '%s', '%s', '%s')", ...
                             patientID, treatmentType, startDate, endDate, treatmentOutcome);
-        
-        % Esecuzione della query
         exec(conn, sqlquery);
     end
     
     disp('Dati inseriti nella tabella Treatments');
+    disp(ME.message);
 end
 
 function fillOutcomes(conn, numEntries)
@@ -134,4 +142,8 @@ function fillOutcomes(conn, numEntries)
     end
     
     disp('Dati inseriti nella tabella Outcomes');
+    disp(ME.message);
 end
+
+
+
