@@ -26,36 +26,33 @@ query_outcomes = sprintf('SELECT * FROM outcomes WHERE O_PatientID = %s', patien
 try
     % Preleva i dati dalla tabella patients
     data_patients = fetch(conn, query_patients);
-    disp('Nome:');
-    disp(data_patients.FirstName);
-
-    disp('Cognome:');
-    disp(data_patients.LastName);
-
-    disp('Età:');
-    disp(data_patients.Age);
-
-    disp('Genere:');
-    disp(data_patients.Gender);
-
-    disp('Codice fiscale:');
-    disp(data_patients.FiscalCode);
+    % Combina i dati in una singola stringa
+    patient_info = sprintf('Nome: %s, Cognome: %s, Età: %d, Genere: %s, Codice fiscale: %s', data_patients.FirstName{1}, data_patients.LastName{1}, data_patients.Age(1), data_patients.Gender{1}, data_patients.FiscalCode{1});
+    
+    % Stampa la stringa combinata
+    disp(patient_info);
 
 
     % Preleva i dati dalla tabella diagnoses
     data_diagnoses = fetch(conn, query_diagnoses);
-    disp('Dati diagnosi:');
-    disp(data_diagnoses);
+    diagnose_info = sprintf('Data e tipo di diagnosi: %s, %s, %s stadio', data_diagnoses.DiagnosisDate{1}, data_diagnoses.DiagnosisType{1}, data_diagnoses.TumorStage{1});
+
+    % Stampa la stringa combinata
+    disp(diagnose_info);
 
     % Preleva i dati dalla tabella treatments
     data_treatments = fetch(conn, query_treatments);
-    disp('Dati trattamenti:');
-    disp(data_treatments);
+    treatment_info = sprintf('Tipo di trattamento: %s, Duarata: %s - %s, Esito: %s', data_treatments.TreatmentType{1}, data_treatments.StartDate{1}, data_treatments.EndDate{1}, data_treatments.TreatmentOutcome{1});
+    
+    % Stampa la stringa combinata
+    disp(treatment_info);
 
     % Preleva i dati dalla tabella outcomes
     data_outcomes = fetch(conn, query_outcomes);
-    disp('Dati esiti:');
-    disp(data_outcomes);
+    outcome_info = sprintf('Stato paziente: %s', data_outcomes.Status{1});
+
+    % Stampa la stringa combinata
+    disp(outcome_info);
 catch ME
     disp('Errore durante l''esecuzione delle query:');
     disp(ME.message);  % Mostra il messaggio di errore
