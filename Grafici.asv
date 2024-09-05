@@ -113,104 +113,83 @@ end
 
 %%GRAFICO PERFETTO DA INSERIRE NEL PROGRAMMA
 
-plotCancerTypeDistribution(conn)
-
-function plotCancerTypeDistribution(conn)
-    % Query per estrarre i tipi di diagnosi
-    query = 'SELECT DiagnosisType FROM Diagnoses';
-
-    % Esecuzione della query
-    data = fetch(conn, query);
-
-    % Controlla se ci sono risultati
-    if isempty(data)
-        disp('Nessun dato trovato nella tabella Diagnoses.');
-        return;
-    end
-
-    % Estrai i tipi di diagnosi dalla tabella
-    diagnosisTypes = data.DiagnosisType;
-
-    % Verifica il tipo dei dati
-    disp('Tipo di dati estratti:');
-    disp(class(diagnosisTypes));
-
-    % Conta il numero di diagnosi per ciascun tipo
-    if iscell(diagnosisTypes)
-        diagnosisCategories = categorical(diagnosisTypes);
-    else
-        disp('I dati non sono in formato cella, quindi potrebbe essere necessario convertirli.');
-        diagnosisCategories = categorical(cellstr(num2str(diagnosisTypes)));
-    end
-
-    % Conta il numero di diagnosi per ciascun tipo
-    [typeCounts, typeLabels] = histcounts(diagnosisCategories, 'Categories', categories(diagnosisCategories));
-
-    % Crea il grafico a barre
-    figure;
-    hBar = bar(typeCounts);
-
-    % Definisci una mappa di colori
-    numBars = length(typeCounts);
-    colors = lines(numBars); % Usa la mappa di colori predefinita "lines" per generare colori
-    % colors = [1 0 0; 0 1 0; 0 0 1; 1 1 0; ... ]; % Definisci manualmente se preferisci
-
-    % Assegna i colori alle barre
-    for i = 1:numBars
-        hBar.FaceColor = 'flat';
-        hBar.CData(i, :) = colors(i, :);
-    end
-
-    set(gca, 'XTickLabel', typeLabels);
-    xlabel('Tipo di Cancro al Fegato');
-    ylabel('Numero di Diagnosi');
-    title('Distribuzione dei Tipi di Cancro al Fegato');
-    grid on;
-end
-
-% graficoEta3D(conn)
+% plotCancerTypeDistribution(conn)
 % 
-% function graficoEta3D(conn)
-%     % Query per ottenere i dati dell'età dei pazienti
-%     query = 'SELECT Age FROM Patients';
+% function plotCancerTypeDistribution(conn)
+%     % Query per estrarre i tipi di diagnosi
+%     query = 'SELECT DiagnosisType FROM Diagnoses';
+% 
+%     % Esecuzione della query
 %     data = fetch(conn, query);
 % 
-%     % Controllo dati
+%     % Controlla se ci sono risultati
 %     if isempty(data)
-%         disp('Nessun dato recuperato.');
+%         disp('Nessun dato trovato nella tabella Diagnoses.');
 %         return;
 %     end
 % 
-%     % Converte in array se necessario
-%     eta = data.Age;
+%     % Estrai i tipi di diagnosi dalla tabella
+%     diagnosisTypes = data.DiagnosisType;
 % 
-%     % Controlla che 'eta' sia numerico
-%     eta = str2double(eta);  % se 'eta' è un array di stringhe, converti in numerico
+%     % Verifica il tipo dei dati
+%     disp('Tipo di dati estratti:');
+%     disp(class(diagnosisTypes));
 % 
-%     % Rimuove eventuali valori non numerici
-%     eta = eta(~isnan(eta));
+%     % Conta il numero di diagnosi per ciascun tipo
+%     if iscell(diagnosisTypes)
+%         diagnosisCategories = categorical(diagnosisTypes);
+%     else
+%         disp('I dati non sono in formato cella, quindi potrebbe essere necessario convertirli.');
+%         diagnosisCategories = categorical(cellstr(num2str(diagnosisTypes)));
+%     end
 % 
-%     % Definisci gli intervalli di età (es. ogni 5 anni)
-%     ageEdges = 18:5:90;  % Intervallo di età tra 18 e 90 con passo di 5
+%     % Conta il numero di diagnosi per ciascun tipo
+%     [typeCounts, typeLabels] = histcounts(diagnosisCategories, 'Categories', categories(diagnosisCategories));
 % 
-%     % Conta il numero di pazienti per ogni intervallo di età
-%     [counts, ageCenters] = histcounts(eta, ageEdges);
-% 
-%     % Crea coordinate per l'istogramma 3D
-%     X = ageCenters(1:end-1) + diff(ageCenters) / 2;  % Centri degli intervalli di età
-%     Y = zeros(size(X));  % Imposta Y a 0 per visualizzare lungo l'asse Y
-%     Z = counts;  % Conta come altezza delle barre
-% 
-%     % Crea il grafico 3D
+%     % Crea il grafico a barre
 %     figure;
-%     bar3(Z, 'detached');
-%     set(gca, 'XTickLabel', string(ageEdges(1:end-1)));  % Etichette dell'età sugli assi
+%     hBar = bar(typeCounts);
 % 
-%     % Aggiungi titolo e etichette
-%     title('Distribuzione delle età dei pazienti (Istogramma 3D)');
-%     xlabel('Età');
-%     ylabel(' ');
-%     zlabel('Numero di pazienti');
+%     % Definisci una mappa di colori
+%     numBars = length(typeCounts);
+%     colors = lines(numBars); % Usa la mappa di colori predefinita "lines" per generare colori
+%     % colors = [1 0 0; 0 1 0; 0 0 1; 1 1 0; ... ]; % Definisci manualmente se preferisci
+% 
+%     % Assegna i colori alle barre
+%     for i = 1:numBars
+%         hBar.FaceColor = 'flat';
+%         hBar.CData(i, :) = colors(i, :);
+%     end
+% 
+%     set(gca, 'XTickLabel', typeLabels);
+%     xlabel('Tipo di Cancro al Fegato');
+%     ylabel('Numero di Diagnosi');
+%     title('Distribuzione dei Tipi di Cancro al Fegato');
+%     grid on;
 % end
-% 
-% 
+
+istogrammaSempliceEta(conn)
+
+function istogrammaSempliceEta(conn)
+    % Query per ottenere i dati dell'età dei pazienti
+    query = 'SELECT Age FROM Patients';
+    data = fetch(conn, query);
+
+    % Controllo dati
+    if isempty(data)
+        disp('Nessun dato recuperato.');
+        return;
+    end
+
+    % Converte in array se necessario
+    eta = data.Age;
+    
+    plot(eta, "r---o",LineWidth=3);
+    % % Genera un istogramma semplice
+    % figure;
+    % histogram(eta);  % Usa i dati dell'età per creare un istogramma
+    title('Distribuzione delle età dei pazienti');
+    xlabel('Età');
+    ylabel('Numero di pazienti');
+end
+
